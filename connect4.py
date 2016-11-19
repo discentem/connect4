@@ -1,8 +1,7 @@
 from graphics import *
-from Tkinter import Button
 
 
-class Button(Tkinter.Button):
+class Button:
 
     def __init__(self, win, x, y, w, h, coords):
         self.win = win
@@ -108,13 +107,10 @@ class Board:
         self.board = board
 
     def chk_button_processes(self):
-        pool = ThreadPool(5)
-        results = []
-        for b in self.board[-1]:
-            results = pool(b)
-            pool.close()
-            pool.join()
-        print(results)
+        for button in self.board[-1]:
+            # constantly check button.clicked() in seperate thread
+            # return button.coords
+            # continue checking
 
     def display(self):
         for row in self.board:
