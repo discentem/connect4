@@ -1,17 +1,16 @@
 from graphics import *
-import tkinter
+from Tkinter import Button
 
-'''
-class Button(tkinter.Button):
 
-    def __init__(self):
+class Button(Tkinter.Button):
+
+    def __init__(self, win, x, y, w, h, coords):
         self.win = win
         self.x = x
         self.y = y
         self.w = w
         self.h = h
         self.coords = coords
-
         self.top_left = Point(self.x, self.y)
         self.bottom_right = Point(self.x+self.w, self.y+self.h)
 
@@ -21,8 +20,17 @@ class Button(tkinter.Button):
         self.frame.draw(self.win)
 
     def clicked(self):
+        p1 = self.top_left
+        p2 = self.bottom_right
+
+        m = self.win.getMouse()
+        a = m.getX() >= p1.getX()
+        b = m.getX() <= p2.getX()
+        c = m.getY() >= p1.getY()
+        d = m.getY() <= p2.getY()
+        if a and b and c and d:
             return self.coords
-'''
+
 
 class Space:
     def mid(self, p1, p2):
@@ -64,8 +72,6 @@ class Space:
 
 
 class Board:
-    def coords(self, i, j):
-        return(i, j)
     def __init__(self, win, x, y, num_of_rows=6, num_of_cols=7, squareSize=3):  # noqa
         self.win = win
         self.x = x
@@ -86,13 +92,9 @@ class Board:
             for j in range(self.num_of_cols):
                 # s = None
                 if i == self.num_of_rows:
-                    '''
-                    s = Space(win, self.x+x_move, self.y+y_move,
-                              self.squareSize, h=self.squareSize/2,
-                              circle=False)
-                    '''
-                    b = tkinter.Button(self.win, text="Hello", command=self.coords(i, j))
-
+                    s = Button(win, self.x+x_move, self.y+y_move,
+                               self.squareSize, self.squareSize/2,
+                               (i, j))
                 else:
                     s = Space(win, self.x+x_move, self.y+y_move,
                               self.squareSize)  # noqa
