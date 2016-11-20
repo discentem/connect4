@@ -25,7 +25,8 @@ class GameWindow(Tk):
         canvas = Canvas(self, width=self.win_width, height=self.win_height)
         canvas.pack()
 
-        board = Board(self, canvas, 5, 5, num_of_rows=self.num_of_rows,
+        board = Board(self, canvas, 5, 5,
+                      num_of_rows=self.num_of_rows,
                       num_of_cols=self.num_of_cols,
                       square_width=self.square_width,
                       square_height=self.square_height,
@@ -38,7 +39,7 @@ class Space:
         if c == 'x':
             return (self.x + self.x+self.w)/2
         else:
-            (self.y + self.y+self.h)/2
+            return (self.y + self.y+self.h)/2
 
     def __init__(self, canvas, x, y, w, coords, h=0):
         self.filled = None
@@ -87,6 +88,7 @@ class Board:
         self.p_colors = player_colors
 
         self.board = []
+        self.color_grid = []
         self.player = 1
 
     def drop_piece(self, row):
@@ -102,6 +104,21 @@ class Board:
                     self.canvas.itemconfig(place, fill=self.p_colors[1])
                     self.player = 1
                 break
+
+        self.update_board_tracker()
+    
+    def update_board_tracker(self):
+        for i in range(len(self.board)-1):
+            row = []
+            for j in range(len(self.board[i])):
+                f = self.board[i][j].__str__()
+                if len(f) > 0:
+                    row.append(f[0])
+                else:
+                    row.append("")
+            self.color_grid.append(row)
+            print(row)
+        print("\n")
 
     def setup(self):
         board = []
@@ -131,5 +148,5 @@ class Board:
             x_move = 0
         self.board = board
 
-win = GameWindow("Connect4", player_colors=['purple', 'black'])
+win = GameWindow("Connect4")  # , player_colors=['purple', 'black'])
 win.mainloop()
