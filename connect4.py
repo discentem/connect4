@@ -124,8 +124,8 @@ class Board:
         self.color_grid[i][j] = f[0]
 
     def check_win(self, row, col, num_to_win=4):
-        # verticals
         for color in self.p_colors:
+            # vertical
             count = 1
             for r in range(0, self.num_of_rows):
                 if self.color_grid[r][int(col)] == color[0]:
@@ -133,7 +133,17 @@ class Board:
                 else:
                     count = 0
                 if count >= num_to_win:
-                    print("people win or something!")
+                    print("vert!", color)
+                    count = 0
+            # horizontal
+            count = 0
+            for c in range(0, self.num_of_cols):
+                if self.color_grid[int(row)][c] == color[0]:
+                    count += 1
+                else:
+                    count = 0
+                if count >= num_to_win:
+                    print("horizontal!", color)
                     count = 0
 
     def setup(self):
@@ -170,6 +180,5 @@ class Board:
                 row.append("")
             self.color_grid.append(row)
 
-win = GameWindow("Connect4", num_of_rows=4, num_of_cols=4,
-                 player_colors=['purple', 'black'])
+win = GameWindow("Connect4", player_colors=['purple', 'black'])
 win.mainloop()
