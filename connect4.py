@@ -29,6 +29,7 @@ class GameWindow(Tk):
                       square_height=self.square_height)
         board.setup()
 
+
 class Space:
     def mid(self, c='x'):
         if c == 'x':
@@ -72,18 +73,25 @@ class Board:
         self.num_of_cols = num_of_cols
         self.board = []
         self.space_count = 1
+        self.player = 1
 
         self.square_width = square_width
         self.square_height = square_height
         if self.square_height == 0:
             self.square_height = self.square_width
 
-    def drop_piece(self, row, player=1):
-        print("coord", 's'+str(0)+row)
-        if player == 1:
-            self.canvas.itemconfig('s'+str(0)+row, fill="blue")
-        if player == 2:
-            self.canvas.itemconfig(1, fill="red")
+    def drop_piece(self, row):
+        for i in range(self.num_of_rows-1, -1, -1):
+            blue = self.canvas.itemcget('s'+str(i)+row, 'fill') == "blue"
+            red = self.canvas.itemcget('s'+str(i)+row, 'fill') == "red"
+            if not(blue) and not(red):
+                if self.player == 1:
+                    self.canvas.itemconfig('s'+str(i)+row, fill="blue")
+                    self.player = -1
+                elif self.player == -1:
+                    self.canvas.itemconfig('s'+str(i)+row, fill="red")
+                    self.player = 1
+                break
 
     def setup(self):
         board = []
@@ -94,11 +102,10 @@ class Board:
             row = []
             for j in range(self.num_of_cols):
                 if i == self.num_of_rows:
-                    s = Button(self.win, text="OK",
+                    s = Button(self.win, text=j+1,
                                width=int(self.square_width/12),
-                               command=lambda i=j: self.drop_piece(str(i)))
-
-                    buttons.append(s)
+                               command=lambda i=j: self.drop_piece(str(i)))  # noqa
+                    # buttons.append(s)
                     s.pack()
                     s.place(x=self.x+x_move,
                             y=self.y+y_move+10)
