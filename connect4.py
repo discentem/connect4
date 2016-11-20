@@ -1,146 +1,121 @@
-from graphics import *
-import tkinter
+from tkinter import *
 
-'''
-class Button(tkinter.Button):
 
-    def __init__(self):
-        self.win = win
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-        self.coords = coords
+class GameWindow(Tk):
+    def __init__(self, win_title, square_width=100, square_height=100,
+                 num_of_rows=6, num_of_cols=7):
+        Tk.__init__(self)
 
-        self.top_left = Point(self.x, self.y)
-        self.bottom_right = Point(self.x+self.w, self.y+self.h)
+        self.win_title = win_title
+        self.title(self.win_title)
+        self.resizable(0, 0)
 
-        self.frame = Rectangle(self.top_left, self.bottom_right)
+        self.num_of_rows = num_of_rows
+        self.num_of_cols = num_of_cols
 
-    def draw(self):
-        self.frame.draw(self.win)
+        self.square_width = square_width
+        self.square_height = square_height
 
-    def clicked(self):
-            return self.coords
-'''
+        self.win_width = self.num_of_cols*self.square_width+10
+        self.win_height = self.num_of_rows*self.square_height+40
+        self.geometry(str(self.win_width) + 'x' + str(self.win_height))
+
+        canvas = Canvas(self, width=self.win_width, height=self.win_height)
+        canvas.pack()
+
+        board = Board(self, canvas, 5, 5, num_of_rows=self.num_of_rows,
+                      num_of_cols=self.num_of_cols,
+                      square_width=self.square_width,
+                      square_height=self.square_height)
+        board.setup()
+
 
 class Space:
-    def mid(self, p1, p2):
-        x = (p1.getX() + p2.getX()) / 2
-        y = (p1.getY() + p2.getY()) / 2
-        return Point(x, y)
+    def mid(self, c='x'):
+        if c == 'x':
+            return (self.x + self.x+self.w)/2
+        else:
+            (self.y + self.y+self.h)/2
 
-    def fill_circle(self, player):
-        if self.circle:
-            if player == 1:
-                self.circle.setFill('Red')
-            elif player == -1:
-                self.circle.setFill('Black')
-
-    def __init__(self, win, x, y, w, h=0, circle=True):
-        self.win = win
+    def __init__(self, canvas, x, y, w, coords, h=0):
+        self.filled = None
+        self.canvas = canvas
         self.x = x
         self.y = y
         self.w = w
         self.h = h
-        self.circle = circle
-        if h == 0:
+        self.mid_x = self.mid('x')
+        self.mid_y = self.mid('y')
+        if self.h == 0:
             self.h = self.w
-        self.r = self.w/3
 
-        self.top_left = Point(self.x, self.y)
-        self.bottom_right = Point(self.x+self.w, self.y+self.h)
+        self.canvas.create_rectangle(self.x, self.y,
+                                     self.x+self.w, self.y+self.h)
 
-        self.sq = Rectangle(self.top_left, self.bottom_right)
-        if self.circle:
-            self.circle = Circle(self.mid(self.top_left, self.bottom_right),
-                                 self.r)
-
-    def draw(self):
-        self.sq.draw(self.win)
-        self.fill_circle(self.win)
-        if type(self.circle) != bool:
-            self.circle.draw(self.win)
+        c_x1 = self.x+self.w/6
+        c_y1 = self.y+self.h/6
+        c_x2 = self.x+(self.w)-(self.w/6)
+        c_y2 = self.y+(self.h)-(self.h/6)
+        self.tag = 's' + coords
+        self.circle = self.canvas.create_oval(c_x1, c_y1, c_x2, c_y2,
+                                              tags=self.tag)
 
 
 class Board:
-    def coords(self, i, j):
-        return(i, j)
-    def __init__(self, win, x, y, num_of_rows=6, num_of_cols=7, squareSize=3):  # noqa
+    def __init__(self, win, canvas, x, y, num_of_rows=6, num_of_cols=7,
+                 square_width=50, square_height=0):
+
         self.win = win
+        self.canvas = canvas
         self.x = x
         self.y = y
         self.num_of_rows = num_of_rows
         self.num_of_cols = num_of_cols
-        self.rows = []
+        self.board = []
+        self.space_count = 1
 
-        self.squareSize = squareSize
+        self.square_width = square_width
+        self.square_height = square_height
+        if self.square_height == 0:
+            self.square_height = self.square_width
+
+    def drop_piece(self, row, player=1):
+        print("coord", 's'+str(0)+row)
+        if player == 1:
+            self.canvas.itemconfig('s'+str(0)+row, fill="blue")
+        if player == 2:
+            self.canvas.itemconfig(1, fill="red")
 
     def setup(self):
         board = []
         x_move = 0
         y_move = 0
+        buttons = []
         for i in range(self.num_of_rows+1):
-            print(i)
             row = []
             for j in range(self.num_of_cols):
-                # s = None
                 if i == self.num_of_rows:
-                    '''
-                    s = Space(win, self.x+x_move, self.y+y_move,
-                              self.squareSize, h=self.squareSize/2,
-                              circle=False)
-                    '''
-                    b = tkinter.Button(self.win, text="Hello", command=self.coords(i, j))
+                    s = Button(self.win, text="OK",
+                               width=int(self.square_width/12),
+                               command=lambda i=j: self.drop_piece(str(i)))
 
+                    buttons.append(s)
+                    s.pack()
+                    s.place(x=self.x+x_move,
+                            y=self.y+y_move+10)
                 else:
-                    s = Space(win, self.x+x_move, self.y+y_move,
-                              self.squareSize)  # noqa
+                    s = Space(self.canvas, self.x+x_move, self.y+y_move,
+                              self.square_width, str(i)+str(j),
+                              self.square_height)
+                    self.space_count += 1
 
                 row.append(s)
-                x_move += self.squareSize
+                x_move += self.square_width
             board.append(row)
-            y_move += self.squareSize
+            y_move += self.square_height
             x_move = 0
-
         self.board = board
 
-    def chk_button_processes(self):
-        pool = ThreadPool(5)
-        results = []
-        for b in self.board[-1]:
-            results = pool(b)
-            pool.close()
-            pool.join()
-        print(results)
 
-    def display(self):
-        for row in self.board:
-            for space in row:
-                space.draw()
-
-
-class Game:
-    def __init__(self, board):
-        self.board = board
-
-        self.board.setup()
-        self.board.display()
-
-    def play(self, turn):
-        for row in self.board.rows:
-            for space in row:
-                if space.clicked():
-                    print(space)
-
-
-win = GraphWin('Connect 4', 540, 500)
-win_w = win.getWidth()
-win_h = win.getHeight()
-
-
-board = Board(win, 0, 0, squareSize=70)
-board.setup()
-board.display()
-
-board.chk_button_processes()
+win = GameWindow("Connect4")
+win.mainloop()
