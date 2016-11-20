@@ -87,13 +87,16 @@ class Board:
 
         self.p_colors = player_colors
 
+        # Physical board, with spaces and buttons.
         self.board = []
+        # CLI grid to track where pieces are.
+        # Win algorigthms will refer to this as source of truth.
         self.color_grid = []
         self.player = 1
 
-    def drop_piece(self, row):
+    def drop_piece(self, col):
         for i in range(self.num_of_rows-1, -1, -1):
-            place = 's'+str(i)+row
+            place = 's'+str(i)+col
             c1 = self.canvas.itemcget(place, 'fill') == self.p_colors[0]
             c2 = self.canvas.itemcget(place, 'fill') == self.p_colors[1]
             if not(c1) and not(c2):
@@ -105,20 +108,33 @@ class Board:
                     self.player = 1
                 break
 
-        self.update_board_tracker()
-    
-    def update_board_tracker(self):
-        for i in range(len(self.board)-1):
-            row = []
-            for j in range(len(self.board[i])):
-                f = self.board[i][j].__str__()
-                if len(f) > 0:
-                    row.append(f[0])
-                else:
-                    row.append("")
-            self.color_grid.append(row)
+        self.update_board_tracker((str(i), col))
+        self.check_win(i, col)
+
+        for row in self.color_grid:
             print(row)
-        print("\n")
+        print('\n')
+
+    def update_board_tracker(self, coords):
+        i = int(coords[0])
+        j = int(coords[1])
+        # color of piece
+        f = self.board[i][j].__str__()
+        # fill in first letter to represent piece in CLI grid
+        self.color_grid[i][j] = f[0]
+
+    def check_win(self, row, col, num_to_win=4):
+        # verticals
+        for color in self.p_colors:
+            count = 1
+            for r in range(0, self.num_of_rows):
+                if self.color_grid[r][int(col)] == color[0]:
+                    count += 1
+                else:
+                    count = 0
+                if count >= num_to_win:
+                    print("people win or something!")
+                    count = 0
 
     def setup(self):
         board = []
@@ -148,5 +164,12 @@ class Board:
             x_move = 0
         self.board = board
 
-win = GameWindow("Connect4")  # , player_colors=['purple', 'black'])
+        for i in range(len(self.board)-1):
+            row = []
+            for j in range(len(self.board[i])):
+                row.append("")
+            self.color_grid.append(row)
+
+win = GameWindow("Connect4", num_of_rows=4, num_of_cols=4,
+                 player_colors=['purple', 'black'])
 win.mainloop()
