@@ -126,7 +126,7 @@ class Board:
     def check_win(self, row, col, num_to_win=4):
         for color in self.p_colors:
             # vertical
-            count = 1
+            count = 0
             for r in range(0, self.num_of_rows):
                 if self.color_grid[r][int(col)] == color[0]:
                     count += 1
@@ -150,7 +150,6 @@ class Board:
         board = []
         x_move = 0
         y_move = 0
-        buttons = []
         for i in range(self.num_of_rows+1):
             row = []
             for j in range(self.num_of_cols):
@@ -158,7 +157,6 @@ class Board:
                     s = Button(self.win, text="^",
                                width=int(self.square_width/12),
                                command=lambda i=j: self.drop_piece(str(i)))  # noqa
-                    # buttons.append(s)
                     s.pack()
                     s.place(x=self.x+x_move,
                             y=self.y+y_move+10)
