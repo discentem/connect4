@@ -81,9 +81,7 @@ class Board(tk.Tk):
                 break
 
         self.cli_grid[i][col] = str(self.grid[i][col].itemcget(1, 'fill'))[0]
-
         self.print_cli_grid()
-
         self.check_win(row, col)
 
     def check_win(self, row, col, num_to_win=4):
@@ -91,7 +89,7 @@ class Board(tk.Tk):
             # vertical
             count = 0
             for r in range(0, self.rows):
-                if self.cli_grid[r][int(col)] == color[0]:
+                if self.cli_grid[r][col] == color[0]:
                     count += 1
                 else:
                     count = 0
@@ -101,7 +99,7 @@ class Board(tk.Tk):
             # horizontal
             count = 0
             for c in range(0, self.cols):
-                if self.cli_grid[int(row)][c] == color[0]:
+                if self.cli_grid[row][c] == color[0]:
                     count += 1
                 else:
                     count = 0
