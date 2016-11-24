@@ -13,6 +13,7 @@ class Space(tk.Canvas):
 
         # instantiate Canvas
         super().__init__(width=self.width, height=self.height)
+        self.color = None
         # set board colors
         self.config(background="yellow", highlightbackground="black",
                     highlightthickness=.5)
@@ -47,12 +48,21 @@ class Board(tk.Tk):
         super().__init__()
         self.resizable(width=False, height=False)
         self.grid = []
+        self.cli_grid = []
         for x in range(0, rows):
             row = []
+            cli_row = []
             for y in range(0, cols):
                 s = Space(self, square_width, x, y, height=self.square_height)
                 row.append(s)
+                cli_row.append("")
             self.grid.append(row)
+            self.cli_grid.append(cli_row)
+
+    def print_cli_grid(self):
+        for row in self.cli_grid:
+            print(row)
+        print('\n')
 
     def drop_piece(self, row, col):
         for i in range(self.rows-1, -1, -1):
@@ -62,11 +72,43 @@ class Board(tk.Tk):
             if not(c1) and not(c2):
                 if self.player == 1:
                     space.itemconfig(1, fill=self.p_colors[0])
+                    space.color = space.itemcget(1, 'fill')
                     self.player = -1
                 elif self.player == -1:
                     space.itemconfig(1, fill=self.p_colors[1])
+                    space.color = space.itemcget(1, 'fill')
                     self.player = 1
                 break
+
+        self.cli_grid[i][col] = str(self.grid[i][col].itemcget(1, 'fill'))[0]
+
+        self.print_cli_grid()
+
+        self.check_win(row, col)
+
+    def check_win(self, row, col, num_to_win=4):
+        for color in self.p_colors:
+            # vertical
+            count = 0
+            for r in range(0, self.rows):
+                if self.cli_grid[r][int(col)] == color[0]:
+                    count += 1
+                else:
+                    count = 0
+                if count >= num_to_win:
+                    print("vert!", color)
+                    count = 0
+            # horizontal
+            count = 0
+            for c in range(0, self.cols):
+                if self.cli_grid[int(row)][c] == color[0]:
+                    count += 1
+                else:
+                    count = 0
+                if count >= num_to_win:
+                    print("horizontal!", color)
+                    count = 0
+
 
 board = Board()
 board.mainloop()
